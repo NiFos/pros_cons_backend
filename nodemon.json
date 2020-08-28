@@ -1,0 +1,6 @@
+{
+  "ignore": ["*.test.ts", "*.test.js"],
+  "ext": "ts",
+  "watch": ["src"],
+  "exec": "npm run babel"
+}
