@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { ApolloServer } from 'apollo-server';
 import { schema } from './schema/schema';
+import { connect } from './models/db';
+connect();
 
 const port = process.env.PORT || 3000;
 
