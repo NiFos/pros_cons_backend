@@ -1,8 +1,9 @@
 import { gql, makeExecutableSchema } from 'apollo-server';
 import { RootQueryType } from './root-query/query.type';
 import { RootMutationType } from './root-mutation/mutation.type';
-import { hello } from './Hello/hello.type';
 import { resolvers } from './resolvers';
+import { post } from './Post/post.type';
+import { dataItem } from './DataItem/data-item.type';
 
 const schemaDefinition = gql`
   schema {
@@ -12,6 +13,6 @@ const schemaDefinition = gql`
 `;
 
 export const schema = makeExecutableSchema({
-  typeDefs: [schemaDefinition, RootQueryType, RootMutationType, hello],
+  typeDefs: [schemaDefinition, RootQueryType, RootMutationType, post, dataItem],
   resolvers: resolvers,
 });
