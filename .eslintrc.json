@@ -22,6 +22,13 @@
     "eqeqeq": "error",
     "no-redeclare": "error",
     "spaced-comment": "error",
-    "prettier/prettier": "error"
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "linebreak-style": ["error", "windows"],
+    "prettier/end-of-line": "off"
   }
 }
