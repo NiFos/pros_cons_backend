@@ -42,6 +42,12 @@ postSchema.statics.add = async (id: string, pros: boolean, title: string) => {
 
 export const Post = model<IPost>('Post', postSchema, postCollection);
 
+export const getPost = async (id: string): Promise<any> => {
+  const post = await Post.findById(id);
+  if (!post) return null;
+  return post;
+};
+
 export const createPost = async (title: string): Promise<{ id: string }> => {
   const post = new Post();
   post.title = title;
