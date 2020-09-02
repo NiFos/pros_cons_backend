@@ -1,10 +1,10 @@
 export const RootQueryResolver = {
-  Hello: async (
+  Post: async (
     parent: any,
     args: any,
     context: any,
     info: any
   ): Promise<string> => {
-    return 'Hello world';
+    return '';
   },
 };
