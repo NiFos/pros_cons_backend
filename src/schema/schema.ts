@@ -3,6 +3,7 @@ import { RootQueryType } from './root-query/query.type';
 import { RootMutationType } from './root-mutation/mutation.type';
 import { resolvers } from './resolvers';
 import { post } from './Post/post.type';
+import { user } from './User/user.type';
 import { dataItem } from './DataItem/data-item.type';
 
 const schemaDefinition = gql`
@@ -13,6 +14,13 @@ const schemaDefinition = gql`
 `;
 
 export const schema = makeExecutableSchema({
-  typeDefs: [schemaDefinition, RootQueryType, RootMutationType, post, dataItem],
+  typeDefs: [
+    schemaDefinition,
+    RootQueryType,
+    RootMutationType,
+    post,
+    dataItem,
+    user,
+  ],
   resolvers: resolvers,
 });
