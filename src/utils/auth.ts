@@ -28,9 +28,9 @@ export const auth = {
       'refreshToken',
     ]);
   },
-  getTokens: (req: any) => [
-    req.headers.token || '',
-    req.headers.refreshToken || '',
+  getTokens: (context: any) => [
+    context.req.headers.token || '',
+    context.req.headers.refreshToken || '',
   ],
   async refreshTokens(res: any, refreshToken: string): Promise<any> {
     try {
@@ -52,13 +52,13 @@ export const auth = {
       return false;
     }
   },
-  async initializeUser(token: string, refreshToken: string, res: any) {
+  async initializeUser(token: string, refreshToken: string, ctx: any) {
     if (!token || !refreshToken) return false;
 
     let response = null;
     jwt.verify(token, SECRET, async (err, info: any) => {
       if (err) {
-        response = await auth.refreshTokens(res, refreshToken);
+        response = await auth.refreshTokens(ctx.res, refreshToken);
       } else {
         response = {
           id: info.id,

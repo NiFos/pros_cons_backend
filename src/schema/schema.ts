@@ -1,4 +1,4 @@
-import { gql, makeExecutableSchema } from 'apollo-server';
+import { gql, makeExecutableSchema } from 'apollo-server-koa';
 import { RootQueryType } from './root-query/query.type';
 import { RootMutationType } from './root-mutation/mutation.type';
 import { resolvers } from './resolvers';
