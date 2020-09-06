@@ -4,6 +4,7 @@ import koa from 'koa';
 import { schema } from './schema/schema';
 import { connect } from './models/db';
 import { auth } from './utils/auth';
+import { authRouter } from './routes/authRoutes';
 connect();
 
 const port = process.env.PORT || 3000;
@@ -22,5 +23,9 @@ const server = new ApolloServer({
 });
 
 server.applyMiddleware({ app });
+app.use(async (ctx, next) => {
+  await next();
+});
+app.use(authRouter.routes()).use(authRouter.allowedMethods());
 
 app.listen({ port }, () => console.log('Server started!'));

@@ -81,6 +81,18 @@ const createConnectionGoogle = () =>
   );
 const oauth2 = google.oauth2('v2');
 
+export const loginUser = async (email: string) => {
+  const exist = await User.findOne({ email: email.toLowerCase() });
+  if (exist) {
+    return exist.id;
+  } else {
+    const newUser = new User();
+    newUser.email = email;
+    await newUser.save();
+    return newUser.id;
+  }
+};
+
 export const oauth = {
   google: {
     getUrl() {
