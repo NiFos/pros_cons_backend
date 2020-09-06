@@ -7,7 +7,7 @@ const { PRODUCTION_AUTH_REDIRECT } = process.env;
 
 authRouter.get('/auth/google', async (ctx: Context) => {
   const { code } = ctx.request.query;
-  if (!code) ctx.body = 'Something went wrong! Please try again!';
+  if (!code) return (ctx.body = 'Something went wrong! Please try again!');
   ctx.body = 'Loading...';
   const user = await oauth.google.getUserInfo(code);
   const userId = loginUser(user.data.email);
