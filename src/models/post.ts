@@ -14,14 +14,20 @@ export interface IPost extends Document {
   add: (id: string, pros: boolean, title: string) => Promise<null>;
 }
 
+const dataSchema = new Schema({
+  type: Boolean,
+  title: String,
+});
 const postSchema = new Schema({
   authorId: {
     type: String,
     required: true,
   },
-  pros: {
-    type: [String],
+  title: {
+    type: String,
+    required: true,
   },
+  data: [dataSchema],
 });
 
 postSchema.statics.updateTitle = async (id: string, title: string) => {
@@ -32,12 +38,10 @@ postSchema.statics.add = async (id: string, pros: boolean, title: string) => {
     pros,
     title,
   };
-
-  await Post.findByIdAndUpdate(id, {
-    $push: {
-      data,
-    },
-  });
+  const post = await Post.findById(id);
+  if (!post || !post.id) return null;
+  post.data.push(data);
+  post.save();
 };
 
 export const Post = model<IPost>('Post', postSchema, postCollection);
@@ -64,7 +68,7 @@ export const updatePost = async (
   const post = await Post.findById(id);
   if (!post || !post.id) return false;
   await post.updateTitle(title);
-  return !!post?._id;
+  return !!post._id;
 };
 
 export const addToPost = async (
@@ -75,10 +79,11 @@ export const addToPost = async (
   const post = await Post.findById(id);
   if (!post || !post.id) return '';
   post.add(id, type, title);
-  return post?._id;
+  return post._id;
 };
 
 export const deletePost = async (id: string): Promise<string> => {
   const post = await Post.findByIdAndDelete(id);
-  return post?.id;
+  if (!post || !post.id) return '';
+  return post.id;
 };
