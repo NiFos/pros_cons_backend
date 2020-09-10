@@ -6,7 +6,7 @@ export const RootQueryType = gql`
   }
   type RootQuery {
     Post(id: String): Post
-    User(id: String): User
+    Me: User
     Auth(type: OauthEnum): String
   }
 `;
