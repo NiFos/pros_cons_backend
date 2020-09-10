@@ -13,13 +13,8 @@ export const RootQueryResolver = {
     const post = getPost(id);
     return post;
   },
-  User: async (
-    parent: any,
-    args: any,
-    context: any,
-    info: any
-  ): Promise<any> => {
-    const { id } = args;
+  Me: async (parent: any, args: any, context: any, info: any): Promise<any> => {
+    const { id } = context.user;
     const user = await User.findById(id);
     if (!user?._id) return null;
     return user;
