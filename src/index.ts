@@ -28,8 +28,7 @@ const corsOptions = {
   credentials: true,
 };
 
-server.applyMiddleware({ app });
-app.use(cors(corsOptions));
+server.applyMiddleware({ app, cors: corsOptions });
 app.use(async (ctx, next) => {
   await next();
 });
