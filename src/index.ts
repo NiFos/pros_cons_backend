@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { ApolloServer } from 'apollo-server-koa';
 import koa from 'koa';
+import cors from '@koa/cors';
 import { schema } from './schema/schema';
 import { connect } from './models/db';
 import { auth } from './utils/auth';
@@ -22,7 +23,13 @@ const server = new ApolloServer({
   },
 });
 
+const corsOptions = {
+  origin: process.env.FRONTEND_URL,
+  credentials: true,
+};
+
 server.applyMiddleware({ app });
+app.use(cors(corsOptions));
 app.use(async (ctx, next) => {
   await next();
 });
