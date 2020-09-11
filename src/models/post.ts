@@ -17,6 +17,7 @@ export interface IPost extends Document {
 const dataSchema = new Schema({
   type: Boolean,
   title: String,
+  _id: { id: false },
 });
 const postSchema = new Schema({
   authorId: {
@@ -80,6 +81,39 @@ export const addToPost = async (
   if (!post || !post.id) return '';
   post.add(id, type, title);
   return post._id;
+};
+
+export const removeFromPost = async (
+  postId: string,
+  dataTitle: string
+): Promise<string> => {
+  if (!dataTitle || !postId) return '';
+  const post = await Post.findById(postId);
+  if (!post || !post.id) return '';
+  const newData = [...post.data].filter((item) => item.title !== dataTitle);
+  post.data = newData;
+  await post.save();
+  return dataTitle;
+};
+
+export const updateInPost = async (
+  postId: string,
+  dataTitle: string,
+  newDataTitle: string
+): Promise<string> => {
+  if (!dataTitle || !postId || !newDataTitle) return '';
+
+  const post = await Post.findById(postId);
+  if (!post || !post.id) return '';
+
+  const newData = [...post.data];
+  const index = newData.findIndex((item) => item.title === dataTitle);
+  if (index !== -1) return '';
+
+  newData[index].title = newDataTitle;
+  post.data = newData;
+  await post.save();
+  return dataTitle;
 };
 
 export const deletePost = async (id: string): Promise<string> => {
