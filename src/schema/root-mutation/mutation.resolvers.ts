@@ -3,6 +3,8 @@ import {
   createPost,
   addToPost,
   deletePost,
+  updateInPost,
+  removeFromPost,
 } from '../../models/post';
 
 export const RootMutationResolver = {
@@ -45,9 +47,10 @@ export const RootMutationResolver = {
     context: any,
     info: any
   ): Promise<string> => {
-    const { dataId } = args;
-    if (!dataId) return '';
-    return dataId;
+    const { postId, dataTitle } = args;
+    if (!postId || !dataTitle) return '';
+    const title = await removeFromPost(postId, dataTitle);
+    return title;
   },
   UpdatePostData: async (
     parent: any,
@@ -55,8 +58,10 @@ export const RootMutationResolver = {
     context: any,
     info: any
   ): Promise<string> => {
-    const { dataId, title } = args;
-    if (!dataId || !title) return '';
+    const { postId, dataTitle, newDataTitle } = args;
+    if (!postId || !dataTitle || !newDataTitle) return '';
+    const title = await updateInPost(postId, dataTitle, newDataTitle);
+    if (!title) return '';
     return title;
   },
   DeletePost: async (
