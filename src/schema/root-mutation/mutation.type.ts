@@ -5,8 +5,12 @@ export const RootMutationType = gql`
     CreatePost(title: String): String
     UpdatePostTitle(title: String): String
     AddPostData(id: String, type: Boolean, title: String): String
-    RemovePostData(dataId: String): String
-    UpdatePostData(dataId: String, type: Boolean): String
+    RemovePostData(postId: String, dataTitle: String): String
+    UpdatePostData(
+      postId: String
+      dataTitle: String
+      newDataTitle: String
+    ): String
     DeletePost(id: String): String
   }
 `;
