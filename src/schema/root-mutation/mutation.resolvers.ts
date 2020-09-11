@@ -39,6 +39,26 @@ export const RootMutationResolver = {
     if (post) return post;
     return '';
   },
+  RemovePostData: async (
+    parent: any,
+    args: any,
+    context: any,
+    info: any
+  ): Promise<string> => {
+    const { dataId } = args;
+    if (!dataId) return '';
+    return dataId;
+  },
+  UpdatePostData: async (
+    parent: any,
+    args: any,
+    context: any,
+    info: any
+  ): Promise<string> => {
+    const { dataId, title } = args;
+    if (!dataId || !title) return '';
+    return title;
+  },
   DeletePost: async (
     parent: any,
     args: any,
