@@ -10,7 +10,7 @@ authRouter.get('/auth/google', async (ctx: Context) => {
   if (!code) return (ctx.body = 'Something went wrong! Please try again!');
   ctx.body = 'Loading...';
   const user = await oauth.google.getUserInfo(code);
-  const userId = loginUser(user.data.email);
+  const userId = await loginUser(user.data.email);
 
   const [authorization, refreshToken] = await auth.createTokens(userId);
   const url = `${PRODUCTION_AUTH_REDIRECT}/auth?authorization=${authorization}&refreshToken=${refreshToken}`;

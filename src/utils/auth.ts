@@ -29,8 +29,8 @@ export const auth = {
     ]);
   },
   getTokens: (context: any) => [
-    context.req.headers.token || '',
-    context.req.headers.refreshToken || '',
+    context.request.header.authorization || '',
+    context.request.header.refreshtoken || '',
   ],
   async refreshTokens(res: any, refreshToken: string): Promise<any> {
     try {
@@ -84,12 +84,12 @@ const oauth2 = google.oauth2('v2');
 export const loginUser = async (email: string) => {
   const exist = await User.findOne({ email: email.toLowerCase() });
   if (exist) {
-    return exist.id;
+    return exist._id;
   } else {
     const newUser = new User();
     newUser.email = email;
     await newUser.save();
-    return newUser.id;
+    return newUser._id;
   }
 };
 
