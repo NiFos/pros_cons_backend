@@ -26,7 +26,10 @@ export const RootMutationResolver = {
     info: any
   ): Promise<string> => {
     const { title } = args;
-    const post = await createPost(title);
+    const { id } = context.user;
+    if (!title || !id) return '';
+
+    const post = await createPost(title, id);
     if (post.id) return post.id;
     return '';
   },
