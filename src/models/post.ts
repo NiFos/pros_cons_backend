@@ -5,6 +5,7 @@ export const postCollection = 'posts';
 interface IData {
   pros: boolean;
   title: string;
+  _id?: string;
 }
 export interface IPost extends Document {
   authorId: string;
@@ -17,7 +18,6 @@ export interface IPost extends Document {
 const dataSchema = new Schema({
   pros: Boolean,
   title: String,
-  _id: { id: false },
 });
 const postSchema = new Schema({
   authorId: {
@@ -85,50 +85,45 @@ export const addToPost = async (
   const post = await Post.findById(id);
   if (!post || !post.id) return '';
   post.data.push({ pros, title });
-  post.save();
-  return post._id;
+  const response = await post.save();
+
+  return response.data[response.data.length - 1]._id || '';
 };
 
 export const removeFromPost = async (
   postId: string,
-  dataTitle: string,
-  pros: boolean
+  dataId: string
 ): Promise<string> => {
-  if (!dataTitle || !postId) return '';
+  if (!dataId || !postId) return '';
   const post = await Post.findById(postId);
   if (!post || !post.id) return '';
   const newData = [...post.data];
-  const index = post.data.findIndex(
-    (el) => el.title === dataTitle && el.pros === pros
-  );
+  const index = post.data.findIndex((el) => el._id === dataId);
   if (index === -1) return '';
   newData.splice(index, 1);
   post.data = newData;
   await post.save();
-  return dataTitle;
+  return dataId;
 };
 
 export const updateInPost = async (
   postId: string,
-  dataTitle: string,
-  pros: boolean,
+  dataId: string,
   newDataTitle: string
 ): Promise<string> => {
-  if (!dataTitle || !postId || !newDataTitle) return '';
+  if (!dataId || !postId || !newDataTitle) return '';
 
   const post = await Post.findById(postId);
   if (!post || !post.id) return '';
 
   const newData = [...post.data];
-  const index = newData.findIndex(
-    (item) => item.title === dataTitle && item.pros === pros
-  );
+  const index = newData.findIndex((el) => el._id?.toString() === dataId);
   if (index === -1) return '';
 
   newData[index].title = newDataTitle;
   post.data = newData;
   await post.save();
-  return dataTitle;
+  return dataId;
 };
 
 export const deletePost = async (id: string): Promise<string> => {

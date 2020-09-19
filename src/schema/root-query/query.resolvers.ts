@@ -10,7 +10,7 @@ export const RootQueryResolver = {
     info: any
   ): Promise<any> => {
     const { id } = args;
-    const post = getPost(id);
+    const post = await getPost(id);
     return post;
   },
   Me: async (parent: any, args: any, context: any, info: any): Promise<any> => {
