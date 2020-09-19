@@ -14,6 +14,7 @@ export const RootQueryResolver = {
     return post;
   },
   Me: async (parent: any, args: any, context: any, info: any): Promise<any> => {
+    if (!context.user || !context.user.id) return null;
     const { id } = context.user;
     const user = await User.findById(id);
     if (!user?._id) return null;

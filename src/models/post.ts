@@ -15,7 +15,7 @@ export interface IPost extends Document {
 }
 
 const dataSchema = new Schema({
-  type: Boolean,
+  pros: Boolean,
   title: String,
   _id: { id: false },
 });
@@ -31,9 +31,9 @@ const postSchema = new Schema({
   data: [dataSchema],
 });
 
-postSchema.statics.updateTitle = async (id: string, title: string) => {
+/* postSchema.statics.updateTitle = async (id: string, title: string) => {
   await Post.findByIdAndUpdate(id, { title });
-};
+}; */
 postSchema.statics.add = async (id: string, pros: boolean, title: string) => {
   const data: IData = {
     pros,
@@ -53,9 +53,13 @@ export const getPost = async (id: string): Promise<any> => {
   return post;
 };
 
-export const createPost = async (title: string): Promise<{ id: string }> => {
+export const createPost = async (
+  title: string,
+  id: string
+): Promise<{ id: string }> => {
   const post = new Post();
   post.title = title;
+  post.authorId = id;
   const createdPost = await post.save();
   return {
     id: createdPost._id,
@@ -68,29 +72,37 @@ export const updatePost = async (
 ): Promise<boolean> => {
   const post = await Post.findById(id);
   if (!post || !post.id) return false;
-  await post.updateTitle(title);
+  post.title = title;
+  post.save();
   return !!post._id;
 };
 
 export const addToPost = async (
   id: string,
-  type: boolean,
+  pros: boolean,
   title: string
 ): Promise<string> => {
   const post = await Post.findById(id);
   if (!post || !post.id) return '';
-  post.add(id, type, title);
+  post.data.push({ pros, title });
+  post.save();
   return post._id;
 };
 
 export const removeFromPost = async (
   postId: string,
-  dataTitle: string
+  dataTitle: string,
+  pros: boolean
 ): Promise<string> => {
   if (!dataTitle || !postId) return '';
   const post = await Post.findById(postId);
   if (!post || !post.id) return '';
-  const newData = [...post.data].filter((item) => item.title !== dataTitle);
+  const newData = [...post.data];
+  const index = post.data.findIndex(
+    (el) => el.title === dataTitle && el.pros === pros
+  );
+  if (index === -1) return '';
+  newData.splice(index, 1);
   post.data = newData;
   await post.save();
   return dataTitle;
@@ -99,6 +111,7 @@ export const removeFromPost = async (
 export const updateInPost = async (
   postId: string,
   dataTitle: string,
+  pros: boolean,
   newDataTitle: string
 ): Promise<string> => {
   if (!dataTitle || !postId || !newDataTitle) return '';
@@ -107,8 +120,10 @@ export const updateInPost = async (
   if (!post || !post.id) return '';
 
   const newData = [...post.data];
-  const index = newData.findIndex((item) => item.title === dataTitle);
-  if (index !== -1) return '';
+  const index = newData.findIndex(
+    (item) => item.title === dataTitle && item.pros === pros
+  );
+  if (index === -1) return '';
 
   newData[index].title = newDataTitle;
   post.data = newData;

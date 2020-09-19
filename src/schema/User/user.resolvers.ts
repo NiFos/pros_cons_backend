@@ -7,7 +7,8 @@ export const userResolvers = {
     context: any,
     info: any
   ): Promise<any> => {
-    const { id } = parent;
+    const { id } = context.user;
+    if (!id) return null;
     const posts = await getUserPosts(id);
     if (!posts || posts.length <= 0) return null;
     return posts;

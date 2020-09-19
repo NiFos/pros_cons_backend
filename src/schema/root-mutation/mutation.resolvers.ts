@@ -15,6 +15,8 @@ export const RootMutationResolver = {
     info: any
   ): Promise<string> => {
     const { id, title } = args;
+    if (!id || !title) return '';
+
     const post = await updatePost(id, title);
     if (post) return id;
     return '';
@@ -39,8 +41,8 @@ export const RootMutationResolver = {
     context: any,
     info: any
   ): Promise<string> => {
-    const { id, type, title } = args;
-    const post = await addToPost(id, type, title);
+    const { id, pros, title } = args;
+    const post = await addToPost(id, pros, title);
     if (post) return post;
     return '';
   },
@@ -50,9 +52,9 @@ export const RootMutationResolver = {
     context: any,
     info: any
   ): Promise<string> => {
-    const { postId, dataTitle } = args;
+    const { postId, dataTitle, pros } = args;
     if (!postId || !dataTitle) return '';
-    const title = await removeFromPost(postId, dataTitle);
+    const title = await removeFromPost(postId, dataTitle, pros);
     return title;
   },
   UpdatePostData: async (
@@ -61,9 +63,9 @@ export const RootMutationResolver = {
     context: any,
     info: any
   ): Promise<string> => {
-    const { postId, dataTitle, newDataTitle } = args;
+    const { postId, dataTitle, pros, newDataTitle } = args;
     if (!postId || !dataTitle || !newDataTitle) return '';
-    const title = await updateInPost(postId, dataTitle, newDataTitle);
+    const title = await updateInPost(postId, dataTitle, pros, newDataTitle);
     if (!title) return '';
     return title;
   },
