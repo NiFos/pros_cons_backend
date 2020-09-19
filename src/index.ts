@@ -16,6 +16,7 @@ const server = new ApolloServer({
   context: async ({ ctx }) => {
     const [authorization, refreshToken] = auth.getTokens(ctx);
     const user = await auth.initializeUser(authorization, refreshToken, ctx);
+
     return {
       user,
       ctx,

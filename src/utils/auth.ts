@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { createToken, userHasToken } from '../models/token';
 import { User } from '../models/user';
 import { google } from 'googleapis';
+import Koa from 'koa';
 
 const TOKEN_EXPIRATION = process.env.TOKEN_EXPIRATION || '10m';
 const REFRESH_TOKEN_EXPIRATION = process.env.REFRESH_TOKEN_EXPIRATION || '1h';
@@ -17,13 +18,14 @@ export const auth = {
     const refreshToken = jwt.sign({ id }, SECRET, {
       expiresIn: REFRESH_TOKEN_EXPIRATION,
     });
+
     await createToken(id, refreshToken);
     return [token, refreshToken];
   },
-  setTokens(res: any, [token, refreshToken]: string[]) {
-    res.append('authorization', token);
-    res.append('refreshToken', refreshToken);
-    res.append('Access-Control-Expose-Headers', [
+  setTokens(ctx: any, [token, refreshToken]: string[]) {
+    ctx.response.set('authorization', token);
+    ctx.response.set('refreshToken', refreshToken);
+    ctx.response.set('Access-Control-Expose-Headers', [
       'authorization',
       'refreshToken',
     ]);
@@ -32,44 +34,64 @@ export const auth = {
     context.request.header.authorization || '',
     context.request.header.refreshtoken || '',
   ],
-  async refreshTokens(res: any, refreshToken: string): Promise<any> {
+  async refreshTokens(ctx: Koa.Context, refreshToken: string): Promise<any> {
     try {
       const tokenPayload: any = jwt.verify(refreshToken, SECRET);
       if (!tokenPayload.id) return false;
       const hasToken = userHasToken(tokenPayload.id);
       if (!hasToken) return false;
+      const exist = await User.exists({ _id: tokenPayload.id });
+      if (!exist) return false;
 
-      const user = await User.findById(tokenPayload.id);
-      if (!user) return false;
-
-      const [newToken, newRefreshToken] = await auth.createTokens(user._id);
-
-      auth.setTokens(res, [newToken, newRefreshToken]);
+      const [newToken, newRefreshToken] = await auth.createTokens(
+        tokenPayload.id
+      );
+      auth.setTokens(ctx, [newToken, newRefreshToken]);
       return {
-        id: user._id,
+        id: tokenPayload.id,
       };
     } catch (error) {
       return false;
     }
   },
   async initializeUser(token: string, refreshToken: string, ctx: any) {
-    if (!token || !refreshToken) return false;
+    if (!token || !refreshToken || token === 'null' || refreshToken === 'null')
+      return false;
 
     let response = null;
-    jwt.verify(token, SECRET, async (err, info: any) => {
+    let verifyToken;
+    try {
+      verifyToken = jwt.verify(token, SECRET, (err, info: any) => {
+        if (err) return null;
+        if (info) return info.id;
+      });
+    } catch (error) {
+      verifyToken = null;
+    }
+
+    if (verifyToken) {
+      response = {
+        id: verifyToken,
+      };
+    } else {
+      response = await auth.refreshTokens(ctx, refreshToken);
+    }
+
+    /* jwt.verify(token, SECRET, async (err, info: any) => {
       if (err) {
-        response = await auth.refreshTokens(ctx.res, refreshToken);
+        response = await auth.refreshTokens(ctx, refreshToken);
+        ctx.set('a11', 'a22');
       } else {
         response = {
           id: info.id,
         };
       }
-    });
+    }); */
     return response;
   },
-  async login(id: string, res: any) {
+  async login(id: string, ctx: any) {
     const [token, refreshToken] = await auth.createTokens(id);
-    auth.setTokens(res, [token, refreshToken]);
+    auth.setTokens(ctx, [token, refreshToken]);
   },
 };
 

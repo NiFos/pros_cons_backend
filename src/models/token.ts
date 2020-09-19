@@ -38,6 +38,7 @@ export const createToken = async (
     userToken = new Token();
     userToken.userId = id;
     userToken.refreshToken = newToken;
+    userToken.save();
   }
   return true;
 };
