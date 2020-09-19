@@ -98,7 +98,7 @@ export const removeFromPost = async (
   const post = await Post.findById(postId);
   if (!post || !post.id) return '';
   const newData = [...post.data];
-  const index = post.data.findIndex((el) => el._id === dataId);
+  const index = newData.findIndex((el) => el._id?.toString() === dataId);
   if (index === -1) return '';
   newData.splice(index, 1);
   post.data = newData;
